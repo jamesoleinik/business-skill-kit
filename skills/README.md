@@ -7,12 +7,33 @@ they touch.
 ## The shared shape
 
 ```
-skills/<slug>/
+skills/<domain>/<slug>/
   SKILL.md       the business job, when to use it (and when not), inputs and outputs
-  preflight.py   read-only readiness check; exits non-zero when the env is not ready
-  <scripts>      the skill itself: read-only or dry-run-first, idempotent
-  fixtures/      a synthetic dataset so the skill runs with zero real business data
+  preflight.py   read-only readiness check; exits non-zero when the store is not ready
+  skill.py       the skill itself: read-only or dry-run-first, idempotent
 ```
+
+Every skill runs on the shared [`bskit`](../bskit/) engine against one synthetic company
+fixture, [`fixtures/org.json`](../fixtures/org.json), so it can be tried and tested with
+zero real business data. Reads run against the base fixture; any write is computed as a
+plan and applied only with `--commit`, landing in `out/working.json` and never touching
+the base fixture.
+
+## Quick start
+
+```
+python preflight.py                                   # the fixture loads
+python validate.py                                    # every skill runs (69 checks)
+
+python skills/sales/account-brief/skill.py --account A001
+python skills/service/case-triage/skill.py
+python skills/cross-process/quote-to-cash/skill.py --order S005            # dry run
+python skills/cross-process/quote-to-cash/skill.py --order S005 --commit   # apply
+```
+
+Common flags on every skill: `--json` for structured output, `--commit` to apply a write
+skill's plan, `--store <path>` to point at another store, and `--working out/working.json`
+to read or extend an applied overlay.
 
 ## The safety contract
 
@@ -24,12 +45,13 @@ Every skill honors the same contract (see [`../AGENTS.md`](../AGENTS.md)):
    environment.
 4. Validated against its synthetic fixture before it ships.
 
-## Catalog (draft)
+## Catalog
 
 Skills are organized by business domain. Each entry names the recurring job a
 practitioner does today; the skill packages that job as an intent a coding agent can
 run against the first-party surface, dry-run-first. The concrete tool binding for each
-skill is kept in the private build notes; only generic skill categories ship here.
+skill is kept in the private build notes; only generic skill categories ship here. All
+30 skills below are built and validated against the fixture.
 
 ### Platform layer (Dataverse and Power Platform)
 The data-and-automation foundation every domain skill builds on.
@@ -81,5 +103,14 @@ Small-business operations, same safety contract.
 - **bc-record**  list, create, and update Business Central records safely.
 - **bc-action**  discover and invoke a Business Central action with a dry run first.
 
-Each entry becomes a real skill folder once it is built and validated against a
-fixture. Nothing here is published until it passes the review gate.
+### Cross-process (CRM to ERP)
+The flagship of the kit: skills that span application processes end to end, keeping CRM
+and ERP in agreement.
+
+- **quote-to-cash**  drive a won CRM sales order to an ERP invoice across the whole chain.
+- **lead-to-order**  promote a qualified lead into an opportunity, creating the account if needed.
+- **service-return-to-erp**  turn an approved product return into an ERP credit.
+- **master-data-sync**  align CRM accounts with ERP customers and flag orphans.
+
+Each entry is a real skill folder, built and validated against the fixture by
+[`validate.py`](../validate.py). Nothing is published until it passes the review gate.

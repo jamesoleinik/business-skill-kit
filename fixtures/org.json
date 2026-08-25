@@ -1,0 +1,636 @@
+{
+  "tables": {
+    "account": [
+      {
+        "id": "A001",
+        "name": "Northwind Traders",
+        "industry": "Retail",
+        "revenue": 5200000,
+        "city": "Seattle",
+        "owner": "rep-1",
+        "erp_customer_id": "C-1001"
+      },
+      {
+        "id": "A002",
+        "name": "Contoso Ltd",
+        "industry": "Manufacturing",
+        "revenue": 18000000,
+        "city": "Denver",
+        "owner": "rep-2",
+        "erp_customer_id": "C-1002"
+      },
+      {
+        "id": "A003",
+        "name": "Fabrikam Inc",
+        "industry": "Healthcare",
+        "revenue": 9400000,
+        "city": "Boston",
+        "owner": "rep-1",
+        "erp_customer_id": "C-1003"
+      },
+      {
+        "id": "A004",
+        "name": "Adventure Works",
+        "industry": "Sports",
+        "revenue": 3100000,
+        "city": "Austin",
+        "owner": "rep-3",
+        "erp_customer_id": null
+      },
+      {
+        "id": "A005",
+        "name": "Tailspin Toys",
+        "industry": "Retail",
+        "revenue": 2200000,
+        "city": "Portland",
+        "owner": "rep-2",
+        "erp_customer_id": "C-1005"
+      },
+      {
+        "id": "A006",
+        "name": "Wingtip Toys",
+        "industry": "Retail",
+        "revenue": 4700000,
+        "city": "Chicago",
+        "owner": "rep-3",
+        "erp_customer_id": "C-1006"
+      },
+      {
+        "id": "A007",
+        "name": "Proseware",
+        "industry": "Software",
+        "revenue": 12500000,
+        "city": "Raleigh",
+        "owner": "rep-1",
+        "erp_customer_id": null
+      },
+      {
+        "id": "A008",
+        "name": "Litware",
+        "industry": "Software",
+        "revenue": 7600000,
+        "city": "Phoenix",
+        "owner": "rep-2",
+        "erp_customer_id": "C-1008"
+      }
+    ],
+    "erp_customer": [
+      {
+        "id": "C-1001",
+        "name": "Northwind Traders",
+        "crm_account_id": "A001",
+        "creditlimit": 500000
+      },
+      {
+        "id": "C-1002",
+        "name": "Contoso Limited",
+        "crm_account_id": "A002",
+        "creditlimit": 1000000
+      },
+      {
+        "id": "C-1003",
+        "name": "Fabrikam Inc",
+        "crm_account_id": "A003",
+        "creditlimit": 750000
+      },
+      {
+        "id": "C-1005",
+        "name": "Tailspin Toys",
+        "crm_account_id": "A005",
+        "creditlimit": 250000
+      },
+      {
+        "id": "C-1006",
+        "name": "Wingtip Toys",
+        "crm_account_id": "A006",
+        "creditlimit": 400000
+      },
+      {
+        "id": "C-1008",
+        "name": "Litware",
+        "crm_account_id": "A008",
+        "creditlimit": 600000
+      },
+      {
+        "id": "C-1099",
+        "name": "Old Coho Vineyard",
+        "crm_account_id": null,
+        "creditlimit": 100000
+      }
+    ],
+    "contact": [
+      {
+        "id": "T001",
+        "name": "Ana Ito",
+        "accountid": "A001",
+        "email": "ana@northwind.example",
+        "consent": true
+      },
+      {
+        "id": "T002",
+        "name": "Ben Ono",
+        "accountid": "A002",
+        "email": "ben@contoso.example",
+        "consent": true
+      },
+      {
+        "id": "T003",
+        "name": "Cai Vo",
+        "accountid": "A003",
+        "email": "cai@fabrikam.example",
+        "consent": false
+      },
+      {
+        "id": "T004",
+        "name": "Dee Ru",
+        "accountid": "A004",
+        "email": "dee@advworks.example",
+        "consent": true
+      },
+      {
+        "id": "T005",
+        "name": "Eli Ba",
+        "accountid": "A005",
+        "email": "eli@tailspin.example",
+        "consent": true
+      },
+      {
+        "id": "T006",
+        "name": "Fay Lu",
+        "accountid": "A006",
+        "email": "fay@wingtip.example",
+        "consent": false
+      },
+      {
+        "id": "T007",
+        "name": "Gil Ek",
+        "accountid": "A007",
+        "email": "gil@proseware.example",
+        "consent": true
+      },
+      {
+        "id": "T008",
+        "name": "Hana Mo",
+        "accountid": "A008",
+        "email": "hana@litware.example",
+        "consent": true
+      }
+    ],
+    "lead": [
+      {
+        "id": "L001",
+        "name": "Ivy Sun",
+        "company": "Graphic Design Institute",
+        "email": "ivy@gdi.example",
+        "source": "web",
+        "budget": 90000,
+        "score": null,
+        "status": "new"
+      },
+      {
+        "id": "L002",
+        "name": "Jon Ash",
+        "company": "School of Fine Art",
+        "email": "jon@sofa.example",
+        "source": "event",
+        "budget": 15000,
+        "score": null,
+        "status": "new"
+      },
+      {
+        "id": "L003",
+        "name": "Kim Ley",
+        "company": "Alpine Ski House",
+        "email": "kim@alpine.example",
+        "source": "referral",
+        "budget": 220000,
+        "score": null,
+        "status": "new"
+      },
+      {
+        "id": "L004",
+        "name": "Lee Ora",
+        "company": "Coho Winery",
+        "email": "lee@coho.example",
+        "source": "web",
+        "budget": 0,
+        "score": null,
+        "status": "new"
+      },
+      {
+        "id": "L005",
+        "name": "Mia Rue",
+        "company": "Blue Yonder Airlines",
+        "email": "mia@blueyonder.example",
+        "source": "partner",
+        "budget": 480000,
+        "score": null,
+        "status": "new"
+      },
+      {
+        "id": "L006",
+        "name": "Ned Fox",
+        "company": "Margie's Travel",
+        "email": "ned@margies.example",
+        "source": "web",
+        "budget": 60000,
+        "score": null,
+        "status": "new"
+      }
+    ],
+    "opportunity": [
+      {
+        "id": "O001",
+        "name": "Northwind renewal",
+        "accountid": "A001",
+        "stage": "propose",
+        "amount": 120000,
+        "probability": 60,
+        "closedate": "2026-09-30",
+        "status": "open",
+        "owner": "rep-1",
+        "days_since_activity": 5,
+        "competitor": null
+      },
+      {
+        "id": "O002",
+        "name": "Contoso expansion",
+        "accountid": "A002",
+        "stage": "develop",
+        "amount": 340000,
+        "probability": 40,
+        "closedate": "2026-10-15",
+        "status": "open",
+        "owner": "rep-2",
+        "days_since_activity": 32,
+        "competitor": "generic-rival"
+      },
+      {
+        "id": "O003",
+        "name": "Fabrikam pilot",
+        "accountid": "A003",
+        "stage": "qualify",
+        "amount": 75000,
+        "probability": 20,
+        "closedate": "2026-11-01",
+        "status": "open",
+        "owner": "rep-1",
+        "days_since_activity": 61,
+        "competitor": null
+      },
+      {
+        "id": "O004",
+        "name": "Adventure gear deal",
+        "accountid": "A004",
+        "stage": "close",
+        "amount": 210000,
+        "probability": 90,
+        "closedate": "2026-08-20",
+        "status": "won",
+        "owner": "rep-3",
+        "days_since_activity": 2,
+        "competitor": null
+      },
+      {
+        "id": "O005",
+        "name": "Tailspin restock",
+        "accountid": "A005",
+        "stage": "close",
+        "amount": 45000,
+        "probability": 100,
+        "closedate": "2026-08-10",
+        "status": "won",
+        "owner": "rep-2",
+        "days_since_activity": 9,
+        "competitor": null
+      },
+      {
+        "id": "O006",
+        "name": "Wingtip seasonal",
+        "accountid": "A006",
+        "stage": "propose",
+        "amount": 88000,
+        "probability": 55,
+        "closedate": "2026-09-05",
+        "status": "open",
+        "owner": "rep-3",
+        "days_since_activity": 44,
+        "competitor": "generic-rival"
+      },
+      {
+        "id": "O007",
+        "name": "Proseware platform",
+        "accountid": "A007",
+        "stage": "develop",
+        "amount": 520000,
+        "probability": 35,
+        "closedate": "2026-12-01",
+        "status": "open",
+        "owner": "rep-1",
+        "days_since_activity": 12,
+        "competitor": null
+      },
+      {
+        "id": "O008",
+        "name": "Litware upsell",
+        "accountid": "A008",
+        "stage": "close",
+        "amount": 130000,
+        "probability": 100,
+        "closedate": "2026-08-18",
+        "status": "won",
+        "owner": "rep-2",
+        "days_since_activity": 4,
+        "competitor": null
+      }
+    ],
+    "quote": [
+      {
+        "id": "Q004",
+        "opportunityid": "O004",
+        "status": "won",
+        "amount": 210000
+      },
+      {
+        "id": "Q005",
+        "opportunityid": "O005",
+        "status": "won",
+        "amount": 45000
+      },
+      {
+        "id": "Q008",
+        "opportunityid": "O008",
+        "status": "active",
+        "amount": 130000
+      },
+      {
+        "id": "Q001",
+        "opportunityid": "O001",
+        "status": "draft",
+        "amount": 120000
+      }
+    ],
+    "salesorder": [
+      {
+        "id": "S004",
+        "accountid": "A004",
+        "quoteid": "Q004",
+        "amount": 210000,
+        "status": "submitted",
+        "erp_order_id": "E-9004"
+      },
+      {
+        "id": "S005",
+        "accountid": "A005",
+        "quoteid": "Q005",
+        "amount": 45000,
+        "status": "pending",
+        "erp_order_id": null
+      },
+      {
+        "id": "S008",
+        "accountid": "A008",
+        "quoteid": "Q008",
+        "amount": 130000,
+        "status": "pending",
+        "erp_order_id": null
+      }
+    ],
+    "erp_salesorder": [
+      {
+        "id": "E-9004",
+        "crm_order_id": "S004",
+        "customer_id": "C-1004",
+        "amount": 210000,
+        "status": "invoiced",
+        "invoice_id": "N-7004"
+      }
+    ],
+    "erp_invoice": [
+      {
+        "id": "N-7004",
+        "erp_order_id": "E-9004",
+        "amount": 210000,
+        "status": "open",
+        "duedate": "2026-09-19"
+      }
+    ],
+    "case": [
+      {
+        "id": "K001",
+        "title": "Login fails after update",
+        "accountid": "A001",
+        "contactid": "T001",
+        "priority": "high",
+        "sla_status": "at_risk",
+        "status": "active",
+        "days_open": 3,
+        "category": "technical",
+        "description": "Customer cannot sign in following the latest update."
+      },
+      {
+        "id": "K002",
+        "title": "Billing overcharge",
+        "accountid": "A002",
+        "contactid": "T002",
+        "priority": "high",
+        "sla_status": "breached",
+        "status": "active",
+        "days_open": 6,
+        "category": "billing",
+        "description": "Invoice shows a duplicate line item."
+      },
+      {
+        "id": "K003",
+        "title": "How to export report",
+        "accountid": "A003",
+        "contactid": "T003",
+        "priority": "low",
+        "sla_status": "ok",
+        "status": "active",
+        "days_open": 1,
+        "category": "how-to",
+        "description": "Where is the export button on the report page."
+      },
+      {
+        "id": "K004",
+        "title": "Return damaged unit",
+        "accountid": "A004",
+        "contactid": "T004",
+        "priority": "normal",
+        "sla_status": "ok",
+        "status": "resolved",
+        "days_open": 4,
+        "category": "return",
+        "description": "Unit arrived damaged, approved for return and credit."
+      },
+      {
+        "id": "K005",
+        "title": "Feature request: dark mode",
+        "accountid": "A005",
+        "contactid": "T005",
+        "priority": "low",
+        "sla_status": "ok",
+        "status": "active",
+        "days_open": 2,
+        "category": "feature",
+        "description": "Requesting a dark theme."
+      },
+      {
+        "id": "K006",
+        "title": "Return wrong item shipped",
+        "accountid": "A006",
+        "contactid": "T006",
+        "priority": "normal",
+        "sla_status": "at_risk",
+        "status": "resolved",
+        "days_open": 5,
+        "category": "return",
+        "description": "Wrong SKU shipped, approved for return."
+      },
+      {
+        "id": "K007",
+        "title": "Password reset loop",
+        "accountid": "A007",
+        "contactid": "T007",
+        "priority": "normal",
+        "sla_status": "at_risk",
+        "status": "active",
+        "days_open": 2,
+        "category": "technical",
+        "description": "Reset link keeps expiring."
+      },
+      {
+        "id": "K008",
+        "title": "Upgrade pricing question",
+        "accountid": "A008",
+        "contactid": "T008",
+        "priority": "low",
+        "sla_status": "ok",
+        "status": "active",
+        "days_open": 1,
+        "category": "billing",
+        "description": "Wants the price to upgrade a plan."
+      }
+    ],
+    "knowledgearticle": [
+      {
+        "id": "KB01",
+        "title": "Resolving sign-in issues",
+        "status": "published",
+        "caseid": null,
+        "body": "Steps to resolve common sign-in issues."
+      },
+      {
+        "id": "KB02",
+        "title": "Reading your invoice",
+        "status": "published",
+        "caseid": null,
+        "body": "How to read the line items on an invoice."
+      }
+    ],
+    "segment": [
+      {
+        "id": "SEG1",
+        "name": "Retail buyers",
+        "membercount": 3,
+        "status": "published",
+        "definition": "industry == Retail"
+      },
+      {
+        "id": "SEG2",
+        "name": "High revenue",
+        "membercount": 4,
+        "status": "published",
+        "definition": "revenue > 5000000"
+      },
+      {
+        "id": "SEG3",
+        "name": "Draft winter promo",
+        "membercount": 0,
+        "status": "draft",
+        "definition": "industry == Retail and consent"
+      }
+    ],
+    "journey": [
+      {
+        "id": "J001",
+        "name": "Onboarding",
+        "status": "live",
+        "errors": 0,
+        "segmentid": "SEG1"
+      },
+      {
+        "id": "J002",
+        "name": "Winback",
+        "status": "live",
+        "errors": 2,
+        "segmentid": "SEG2"
+      },
+      {
+        "id": "J003",
+        "name": "Winter promo",
+        "status": "draft",
+        "errors": 0,
+        "segmentid": "SEG3"
+      }
+    ],
+    "emailmsg": [
+      {
+        "id": "M001",
+        "name": "Onboarding welcome",
+        "channel": "email",
+        "sends": 1000,
+        "opens": 420,
+        "clicks": 90
+      },
+      {
+        "id": "M002",
+        "name": "Winback offer",
+        "channel": "email",
+        "sends": 800,
+        "opens": 210,
+        "clicks": 33
+      },
+      {
+        "id": "M003",
+        "name": "SMS reminder",
+        "channel": "sms",
+        "sends": 500,
+        "opens": 0,
+        "clicks": 40
+      }
+    ],
+    "bc_item": [
+      {
+        "id": "B001",
+        "number": "1000",
+        "description": "Bicycle",
+        "price": 4000,
+        "inventory": 32
+      },
+      {
+        "id": "B002",
+        "number": "1100",
+        "description": "Front Wheel",
+        "price": 1200,
+        "inventory": 120
+      },
+      {
+        "id": "B003",
+        "number": "1200",
+        "description": "Back Wheel",
+        "price": 1300,
+        "inventory": 110
+      },
+      {
+        "id": "B004",
+        "number": "1300",
+        "description": "Chain",
+        "price": 300,
+        "inventory": 400
+      }
+    ]
+  },
+  "audit": []
+}

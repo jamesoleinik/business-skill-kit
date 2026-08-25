@@ -1,0 +1,5 @@
+# Business Skill Kit uses the Python standard library only.
+#
+# Every skill and the shared bskit engine run on a clean Python 3.8+ install with no
+# third-party packages. This file is intentionally empty of dependencies so validation
+# runs anywhere. If you later add optional integrations, pin them here.

@@ -38,6 +38,7 @@ inventory; only generic, non-confidential skill categories ship here.
 | Dynamics 365 Customer Insights | build segments, validate journeys, report campaigns, guard consent | Customer Insights data and journeys |
 | Finance, Operations, and Business Central | read and edit operational entities and documents on trusted data | Finance and Operations and Business Central |
 | Power Platform | automate the steps, surface them in an app, and put an agent in front | Power Automate, Power Apps, Copilot Studio |
+| Cross-process (CRM to ERP) | quote-to-cash, lead-to-order, returns-to-credit, and master-data sync spanning apps | the links between Dynamics 365 CRM and ERP |
 
 Dynamics 365 apps and Dataverse share one unified environment (the Power Platform
 unified experience); the kit treats them as one data-and-logic layer, not separate
@@ -45,18 +46,42 @@ stores.
 
 ## The shape of a skill
 
-Every skill is a self-contained folder under [`skills/`](skills/):
+Every skill is a self-contained folder under [`skills/<domain>/`](skills/):
 
 - `SKILL.md`  the business job it does, when to use it (and when not to), and its
   inputs and outputs.
-- `preflight.py`  a read-only check that the skill can run (auth works, the
-  environment is reachable, prerequisites present). Exits non-zero when not ready.
-- one or more scripts  the skill itself, read-only or dry-run-first, idempotent.
-- a fixture  a synthetic dataset so the skill can be tried and tested with zero real
-  business data.
+- `preflight.py`  a read-only check that the skill can run (the store loads, required
+  tables are present). Exits non-zero when not ready.
+- `skill.py`  the skill itself, read-only or dry-run-first, idempotent.
 
-See [`skills/README.md`](skills/README.md) for the shared shape and the safety
-contract every skill honors.
+All 30 skills share one small engine, [`bskit`](bskit/), and one synthetic company
+fixture, [`fixtures/org.json`](fixtures/org.json), so every skill can be tried and tested
+with zero real business data. Reads run against the base fixture; a write is shown as a
+plan and applied only with `--commit`, writing to `out/working.json` and never mutating
+the base.
+
+See [`skills/README.md`](skills/README.md) for the full catalog and the safety contract
+every skill honors.
+
+## Quick start
+
+Python 3.8+, standard library only. No install step.
+
+```
+python preflight.py     # the fixture loads and the engine imports
+python validate.py      # runs every skill against the fixture (69 checks)
+
+# read and summarize
+python skills/sales/account-brief/skill.py --account A001
+python skills/service/case-triage/skill.py
+
+# a cross-process job: won CRM order all the way to an ERP invoice
+python skills/cross-process/quote-to-cash/skill.py --order S005            # dry run
+python skills/cross-process/quote-to-cash/skill.py --order S005 --commit   # apply
+```
+
+Regenerate the fixture any time with `python fixtures/make_fixture.py`, and the per-skill
+`SKILL.md` and `preflight.py` with `python scripts/scaffold_skills.py`.
 
 ## Guardrails
 
@@ -77,8 +102,11 @@ These run through every skill in the kit, and are spelled out in
 
 ## Status
 
-Scaffolded. The skill catalog is being built up area by area from the private
-first-party surface map; it stays private until it passes the publish review gate.
+In active development, private. All 30 skills across seven domains (platform, sales,
+service, marketing, finance, Business Central, and cross-process) are built and pass
+`validate.py` against the synthetic fixture. The concrete first-party tool binding for
+each skill is mapped in private build notes; it stays private until it passes the publish
+review gate.
 
 ## License
 
