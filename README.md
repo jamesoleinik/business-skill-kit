@@ -33,7 +33,10 @@ inventory; only generic, non-confidential skill categories ship here.
 | Area | The business jobs | First-party surface |
 |------|-------------------|---------------------|
 | Dataverse | model, query, bulk-edit, reconcile, and audit the business records | Dataverse MCP server, Web API, SDK |
-| Dynamics 365 | the domain jobs on top of that data: sales, service, field, finance and operations | model-driven apps and business logic over the same environment |
+| Dynamics 365 Sales | qualify leads, brief accounts, catch up and de-risk opportunities, run quotes | model-driven Sales over the shared environment |
+| Dynamics 365 Customer Service | triage the queue, summarize cases, draft grounded responses and knowledge | model-driven Customer Service over the shared environment |
+| Dynamics 365 Customer Insights | build segments, validate journeys, report campaigns, guard consent | Customer Insights data and journeys |
+| Finance, Operations, and Business Central | read and edit operational entities and documents on trusted data | Finance and Operations and Business Central |
 | Power Platform | automate the steps, surface them in an app, and put an agent in front | Power Automate, Power Apps, Copilot Studio |
 
 Dynamics 365 apps and Dataverse share one unified environment (the Power Platform

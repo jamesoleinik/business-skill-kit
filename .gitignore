@@ -8,3 +8,6 @@ __pycache__/
 
 # Skill working output (never commit real business data)
 out/
+
+# Private build notes: confidential first-party tool bindings, kept local only
+build-notes/
