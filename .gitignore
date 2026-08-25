@@ -1,0 +1,10 @@
+# Secrets and local config
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Skill working output (never commit real business data)
+out/
