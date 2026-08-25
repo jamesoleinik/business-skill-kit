@@ -83,6 +83,19 @@ python skills/cross-process/quote-to-cash/skill.py --order S005 --commit   # app
 Regenerate the fixture any time with `python fixtures/make_fixture.py`, and the per-skill
 `SKILL.md` and `preflight.py` with `python scripts/scaffold_skills.py`.
 
+### Optional: live read-only smoke test
+
+The skills run on the fixture with zero setup. To prove the read path and auth against a
+real Dataverse environment, there is an opt-in, strictly read-only smoke test (it never
+writes). See [`LIVE.md`](LIVE.md):
+
+```
+python scripts/live_smoke.py --url https://<your-env>.crm.dynamics.com
+```
+
+It uses the Azure CLI for a runtime token; no secret is stored or committed. Verified
+read-only against a real environment on 2026-08-25.
+
 ## Guardrails
 
 These run through every skill in the kit, and are spelled out in
