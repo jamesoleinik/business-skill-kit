@@ -1,0 +1,22 @@
+{
+  "name": "business-skill-kit-live-agent",
+  "version": "1.0.0",
+  "description": "Copilot-SDK harness that tests the Business Skill Kit skills against real Dataverse orgs via the Dataverse MCP server.",
+  "main": "run.ts",
+  "scripts": {
+    "run": "tsx run.ts",
+    "check": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@github/copilot-sdk": "^1.0.11",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0"
+  }
+}

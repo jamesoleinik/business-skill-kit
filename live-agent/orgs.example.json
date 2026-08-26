@@ -1,0 +1,5 @@
+[
+  { "label": "orgA", "url": "https://your-org-a.crm.dynamics.com", "tenantId": "00000000-0000-0000-0000-000000000000" },
+  { "label": "orgB", "url": "https://your-org-b.crm.dynamics.com", "tenantId": "00000000-0000-0000-0000-000000000000" },
+  { "label": "orgC", "url": "https://your-org-c.crm.dynamics.com", "tenantId": "00000000-0000-0000-0000-000000000000" }
+]

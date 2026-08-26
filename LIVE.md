@@ -79,3 +79,16 @@ with zero setup and zero real data. Mapping each skill to a specific environment
 is deployment-time work; live mode here proves the read path and auth, not a full schema
 binding. Any future live writes must stay dry-run-first and go through explicit approval,
 exactly as the fixture path does.
+
+## Agent-driven testing across servers (live-agent/)
+
+`live-agent/` is a GitHub Copilot SDK harness that drives the real Dataverse MCP server
+(`<org>/api/mcp`) against multiple orgs and prints a PASS / FAIL / NA matrix per skill per
+org. Unlike the `az`-token read probes above, it authenticates via the endpoint's
+interactive OAuth (auth-code + PKCE) as an approved MCP client, so you sign in per org and
+it can exercise both reads and writes (writes create a `zzz-bskit-test` record and delete
+it). Requires the *Microsoft GitHub Copilot* MCP client to be allowed on each environment
+(https://aka.ms/configuremcpclientlist). See `live-agent/README.md`.
+is deployment-time work; live mode here proves the read path and auth, not a full schema
+binding. Any future live writes must stay dry-run-first and go through explicit approval,
+exactly as the fixture path does.
