@@ -1,0 +1,25 @@
+{
+  "skill": "service/case-triage",
+  "description": "Rank the active case queue by SLA, priority, and age so agents work the right case next.",
+  "with": {
+    "module": "skills/service/case-triage/skill.py",
+    "args": {"top": 25},
+    "datasets": {"queue": "queue"}
+  },
+  "without": {
+    "text": "Here is the list of support cases.",
+    "datasets": {"queue": {"source": "table", "table": "case"}}
+  },
+  "cases": [
+    {
+      "id": "ct-work-the-right-case",
+      "query": "Which support case should the agent pick up next?",
+      "assertions": [
+        {"level": "critical", "kind": "ranked_first", "dataset": "queue", "by": "score", "idfield": "id", "id": "K002"},
+        {"level": "critical", "kind": "not_contains", "dataset": "queue", "idfield": "id", "id": "K004"},
+        {"level": "expected", "kind": "rank_position", "dataset": "queue", "by": "score", "idfield": "id", "id": "K001", "position": 1},
+        {"level": "expected", "kind": "not_contains", "dataset": "queue", "idfield": "id", "id": "K006"}
+      ]
+    }
+  ]
+}

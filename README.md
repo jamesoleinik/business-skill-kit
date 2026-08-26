@@ -96,6 +96,17 @@ python scripts/live_smoke.py --url https://<your-env>.crm.dynamics.com
 It uses the Azure CLI for a runtime token; no secret is stored or committed. Verified
 read-only against a real environment on 2026-08-25.
 
+### Prove a skill helps, not just runs: ablation
+
+Validation proves a skill runs. **Ablation** proves it helps. Each task is run twice, with
+the skill and without it, and the difference is measured; a skill with no measurable lift is
+flagged as possible dead weight. Standard library only, deterministic, no login for fixture
+mode. See [`ablation/README.md`](ablation/README.md):
+
+```
+python ablation/run_ablation.py            # all cases, with vs without, N=3
+```
+
 ## Guardrails
 
 These run through every skill in the kit, and are spelled out in

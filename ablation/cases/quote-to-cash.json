@@ -1,0 +1,32 @@
+{
+  "skill": "cross-process/quote-to-cash",
+  "description": "Drive a won CRM sales order across the process boundary into an ERP sales order and invoice.",
+  "with": {
+    "module": "skills/cross-process/quote-to-cash/skill.py",
+    "args": {"order": "S005", "duedate": "2026-09-30"},
+    "datasets": {
+      "erp_invoice_plan": "plans.erp_invoice",
+      "erp_salesorder_plan": "plans.erp_salesorder",
+      "salesorder_plan": "plans.salesorder"
+    }
+  },
+  "without": {
+    "text": "The CRM sales order S005 is won.",
+    "datasets": {
+      "erp_invoice_plan": {"source": "empty_plan"},
+      "erp_salesorder_plan": {"source": "empty_plan"},
+      "salesorder_plan": {"source": "empty_plan"}
+    }
+  },
+  "cases": [
+    {
+      "id": "q2c-order-to-invoice",
+      "query": "The quote is won. Push sales order S005 through to an ERP invoice.",
+      "assertions": [
+        {"level": "critical", "kind": "plan_creates", "dataset": "erp_salesorder_plan", "match": {"id": "E-9005", "crm_order_id": "S005"}},
+        {"level": "critical", "kind": "plan_creates", "dataset": "erp_invoice_plan", "match": {"id": "N-7005", "erp_order_id": "E-9005"}},
+        {"level": "expected", "kind": "plan_updates", "dataset": "salesorder_plan", "key": "S005", "field": "erp_order_id", "to": "E-9005"}
+      ]
+    }
+  ]
+}

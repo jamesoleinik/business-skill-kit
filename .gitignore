@@ -8,6 +8,7 @@ __pycache__/
 
 # Skill working output (never commit real business data)
 out/
+ablation/reports/
 
 # Private build notes: confidential first-party tool bindings, kept local only
 build-notes/

@@ -1,0 +1,26 @@
+{
+  "skill": "sales/lead-qualify",
+  "description": "Score inbound leads on fit and intent, set score and qualified/nurture status.",
+  "with": {
+    "module": "skills/sales/lead-qualify/skill.py",
+    "args": {"threshold": 50, "all": true},
+    "datasets": {"scored": "scored"}
+  },
+  "without": {
+    "text": "Here are the new leads from the queue.",
+    "datasets": {"scored": {"source": "table", "table": "lead"}}
+  },
+  "cases": [
+    {
+      "id": "lq-prioritize-hot-leads",
+      "query": "Qualify the new inbound leads and tell me which one to prioritize first.",
+      "assertions": [
+        {"level": "critical", "kind": "ranked_first", "dataset": "scored", "by": "score", "idfield": "id", "id": "L003"},
+        {"level": "critical", "kind": "field_equals", "dataset": "scored", "idfield": "id", "id": "L005", "field": "status", "value": "qualified"},
+        {"level": "critical", "kind": "field_equals", "dataset": "scored", "idfield": "id", "id": "L004", "field": "status", "value": "nurture"},
+        {"level": "expected", "kind": "field_equals", "dataset": "scored", "idfield": "id", "id": "L002", "field": "status", "value": "nurture"},
+        {"level": "expected", "kind": "rank_position", "dataset": "scored", "by": "score", "idfield": "id", "id": "L005", "position": 1}
+      ]
+    }
+  ]
+}
