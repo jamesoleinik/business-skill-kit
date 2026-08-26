@@ -29,6 +29,17 @@ from bskit.store import Store  # noqa: E402
 
 _MODULE_CACHE = {}
 
+# Optional override: when set to a JSON snapshot path (e.g. one built from live Dataverse
+# reads), both the with-skill and without-skill conditions read from it instead of the
+# committed fixture. This is how live mode reuses the exact same runner, judge, and stats.
+_STORE_PATH_OVERRIDE = None
+
+
+def set_store_path(path):
+    """Point the harness at a snapshot other than the committed fixture (or None to reset)."""
+    global _STORE_PATH_OVERRIDE
+    _STORE_PATH_OVERRIDE = path
+
 
 def _load_skill(rel_path):
     """Import a skill module from its file path, once."""
@@ -62,7 +73,7 @@ def _args_namespace(arg_map):
 
 def _fresh_store():
     # A fresh store per run; reads only, so the base fixture is never mutated.
-    return Store(default_store_path(), working=None)
+    return Store(_STORE_PATH_OVERRIDE or default_store_path(), working=None)
 
 
 def run_with(case_def):
