@@ -26,7 +26,7 @@ It calls `WhoAmI`, then reads a few standard tables (`systemusers`, `accounts`,
 
 ## Verified
 
-Run read-only against a real environment (agent365003 tenant) on 2026-08-25:
+Run read-only against a real environment on 2026-08-25:
 
 ```
 Connected (read-only) to https://<org>.crm.dynamics.com    (Product Launch 2.0)
@@ -38,6 +38,39 @@ Read-only smoke test complete. No writes were made.
 
 The connection and reads succeed; the sales tables are simply empty in that particular
 environment. No live output is committed to the repo.
+
+## Coverage matrix across servers (read-only)
+
+`scripts/live_matrix.py` probes several orgs at once and prints a row-count matrix for the
+standard tables the skills touch. It is GET-only and prints per-cell status instead of data:
+
+```
+python scripts/live_matrix.py \
+  --url labelA=https://<orgA>.crm.dynamics.com \
+  --url labelB=https://<orgB>.crm.dynamics.com \
+  --url labelC=https://<orgC>.crm.dynamics.com
+```
+
+Example shape of the output (labels generic; no real URLs, GUIDs, or data shown):
+
+```
+server | systemusers | accounts | contacts | leads | opportunities | incidents
+-------+-------------+----------+----------+-------+---------------+----------
+orgA   | 50+         | 0        | 0        | 0     | 0             | 0
+orgB   | 401         | 401      | 401      | 401   | 401           | 401
+orgC   | 403         | 403      | 403      | 403   | 403           | 403
+```
+
+Cell legend: a number is a read-only row count (top 50; `+` means 50 or more),
+`404` = table absent, `403` = the token identity is not a member of that org,
+`401` = not authorized (typically a cross-tenant token the org rejects),
+`no-token` = a token could not be acquired. No writes are ever made.
+
+What this proves and its limits: the read path and the skills' table surface resolve
+cleanly against an org the signed-in identity actually belongs to. Because the runtime
+token comes from a single `az` sign-in, orgs in other tenants return `401`/`403` until you
+run an interactive per-tenant sign-in (`az login --tenant <id>`) for each. This is a
+read-path/auth breadth check, not full per-skill write testing through the servers.
 
 ## Why the skills still target the fixture
 
