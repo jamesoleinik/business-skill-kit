@@ -10,6 +10,34 @@ each skill through the live Dataverse MCP tools (`read_query`, `describe`, `crea
 Fixture mode (`validate.py` in the repo root) still runs everything offline with zero real
 data. This harness is the optional live counterpart.
 
+## Two planes: Dataverse MCP (CRM) + D365 F&O ERP MCP
+
+The portfolio's cross-process skills (e.g. `quote-to-cash`) span two live MCP servers for
+the **same** environment, each an OAuth-protected resource with the identical auth pattern
+(Entra auth-code + PKCE, a `<resource>/mcp.tools` scope, per-environment client allow-list):
+
+| Plane | Endpoint | Scope |
+| --- | --- | --- |
+| CRM / Dataverse | `https://<env>.crm.dynamics.com/api/mcp` (or `/api/mcp_preview`) | `.../api/mcp/mcp.tools` |
+| ERP / D365 F&O | `https://<env>.operations.dynamics.com/mcp` | `.../mcp/mcp.tools` |
+
+The ERP path is **`/mcp`** (not `/api/mcp`). Both advertise their authorization server and
+scope at `/.well-known/oauth-protected-resource`. The remote **Dynamics 365 ERP MCP Server**
+exposes data tools (`data_find_entities_sql`, `data_get_entity_metadata`,
+`data_find_entity_type`, `data_create_entities`/`update`/`delete`), API tools
+(`api_find_actions`, `api_invoke_action`), and form tools (`form_*`). Query F&O with OData
+`EntitySetName`s (e.g. `SalesOrderHeadersV4`) and a `companyId` (a legal-entity id or
+`Cross-company`). The dual-write bridge entity `D365SalesOrderHeaders` links CRM sales
+orders into F&O, which is the natural join for CRM->ERP skills.
+
+Prereqs for the ERP plane (per Microsoft docs): F&O >= 10.0.46, the MCP feature enabled in
+Feature Management, and the client app allow-listed at *System administration > Setup >
+Allowed MCP clients* (separate from the Dataverse allow-list). Docs:
+`learn.microsoft.com/dynamics365/fin-ops-core/dev-itpro/copilot/mcp/mcp-vscode`.
+
+The stdlib helpers `signin.py` and `mcp_probe.py` work against **either** plane — pass the
+respective `--url` and `--scope`; nothing is hardcoded to an environment.
+
 ## How auth works (important)
 
 The Dataverse MCP endpoint is `https://<org>.crm.dynamics.com/api/mcp`. It is an
