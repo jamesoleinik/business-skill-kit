@@ -45,3 +45,15 @@ Expected result: `69 passed, 0 failed  All checks passed.`
 - `out/` is gitignored; delete `out/working.json` to reset applied overlays.
 - The private tool-surface mapping in `build-notes/` is never exercised by validation and
   never committed.
+
+## Beyond validation: ablation
+
+`validate.py` proves each skill *runs*; ablation proves each skill *helps*. All 30 skills
+have a with-vs-without ablation case and every one earns a **HELPS** verdict:
+
+```
+python ablation/run_ablation.py
+```
+
+See `ablation/README.md` for the methodology, the full-suite coverage, and the live-mode
+feasibility boundary.
