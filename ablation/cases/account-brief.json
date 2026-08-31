@@ -1,0 +1,23 @@
+{
+  "skill": "sales/account-brief",
+  "description": "Assemble a one-page account brief (contacts, open pipeline, open cases) before a call.",
+  "with": {
+    "module": "skills/sales/account-brief/skill.py",
+    "args": {"account": "A001"},
+    "datasets": {"opps": "open_opportunities", "contacts": "contacts"}
+  },
+  "without": {
+    "text": "Here is the account record.",
+    "datasets": {"opps": {"source": "empty"}, "contacts": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "ab-brief-A001",
+      "query": "Give me a briefing on Northwind Traders before the call.",
+      "assertions": [
+        {"level": "critical", "kind": "contains", "dataset": "opps", "idfield": "id", "id": "O001"},
+        {"level": "expected", "kind": "contains", "dataset": "contacts", "idfield": "id", "id": "T001"}
+      ]
+    }
+  ]
+}

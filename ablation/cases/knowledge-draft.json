@@ -1,0 +1,23 @@
+{
+  "skill": "service/knowledge-draft",
+  "description": "Draft a structured knowledge article from a resolved case (preview, no publish).",
+  "with": {
+    "module": "skills/service/knowledge-draft/skill.py",
+    "args": {"case": "K004"},
+    "datasets": {}
+  },
+  "without": {
+    "text": "Case K004 is resolved.",
+    "datasets": {}
+  },
+  "cases": [
+    {
+      "id": "kd-draft-K004",
+      "query": "Turn the resolved return case into a KB article.",
+      "assertions": [
+        {"level": "critical", "kind": "text_contains", "substr": "## Resolution"},
+        {"level": "expected", "kind": "text_contains", "substr": "## Symptom"}
+      ]
+    }
+  ]
+}

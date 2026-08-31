@@ -1,0 +1,23 @@
+{
+  "skill": "cross-process/service-return-to-erp",
+  "description": "Turn a resolved return case into an ERP return order and a negative credit invoice.",
+  "with": {
+    "module": "skills/cross-process/service-return-to-erp/skill.py",
+    "args": {"case": "K006", "amount": 210, "duedate": "2026-09-30"},
+    "datasets": {"credit_plan": "credit_plan", "return_plan": "return_plan"}
+  },
+  "without": {
+    "text": "Case K006 is a resolved return.",
+    "datasets": {"credit_plan": {"source": "empty_plan"}, "return_plan": {"source": "empty_plan"}}
+  },
+  "cases": [
+    {
+      "id": "sre-K004",
+      "query": "Credit the customer for the approved return on case K006.",
+      "assertions": [
+        {"level": "critical", "kind": "plan_creates", "dataset": "credit_plan", "match": {"id": "N-R006"}},
+        {"level": "expected", "kind": "plan_creates", "dataset": "return_plan", "match": {"id": "E-R006"}}
+      ]
+    }
+  ]
+}

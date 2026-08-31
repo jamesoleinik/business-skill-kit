@@ -1,0 +1,23 @@
+{
+  "skill": "platform/agent-front",
+  "description": "Draft a Copilot Studio topic (trigger phrases and a grounded tool call) to out/.",
+  "with": {
+    "module": "skills/platform/agent-front/skill.py",
+    "args": {"skill": "lead-qualify", "inputs": "threshold,source"},
+    "datasets": {"triggers": "trigger_phrases", "inputs": "inputs"}
+  },
+  "without": {
+    "text": "You want an agent that runs lead-qualify.",
+    "datasets": {"triggers": {"source": "empty"}, "inputs": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "af-topic-spec",
+      "query": "Draft a Copilot Studio topic that calls the lead-qualify skill.",
+      "assertions": [
+        {"level": "critical", "kind": "count_min", "dataset": "triggers", "n": 1},
+        {"level": "expected", "kind": "count_min", "dataset": "inputs", "n": 1}
+      ]
+    }
+  ]
+}

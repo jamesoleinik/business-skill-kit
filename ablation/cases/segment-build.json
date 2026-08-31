@@ -1,0 +1,23 @@
+{
+  "skill": "marketing/segment-build",
+  "description": "Compute a segment's membership from its definition and refresh the count (dry-run-first).",
+  "with": {
+    "module": "skills/marketing/segment-build/skill.py",
+    "args": {"segment": "SEG1", "source": "account"},
+    "datasets": {"members": "members"}
+  },
+  "without": {
+    "text": "Segment SEG1 is 'Retail buyers'.",
+    "datasets": {"members": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "sb-retail-SEG1",
+      "query": "Refresh the Retail buyers segment membership.",
+      "assertions": [
+        {"level": "critical", "kind": "contains", "dataset": "members", "idfield": "id", "id": "A001"},
+        {"level": "expected", "kind": "count_min", "dataset": "members", "n": 3}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "skill": "business-central/bc-record",
+  "description": "List, create, or update a Business Central item, dry-run-first and idempotent.",
+  "with": {
+    "module": "skills/business-central/bc-record/skill.py",
+    "args": {"id": "B001", "set": ["price=4200"]},
+    "datasets": {"plan": ""}
+  },
+  "without": {
+    "text": "Item B001 is a Bicycle.",
+    "datasets": {"plan": {"source": "empty_plan"}}
+  },
+  "cases": [
+    {
+      "id": "bc-reprice-B001",
+      "query": "Change the Bicycle item price to 4200.",
+      "assertions": [
+        {"level": "critical", "kind": "plan_updates", "dataset": "plan", "key": "B001", "field": "price", "to": 4200}
+      ]
+    }
+  ]
+}

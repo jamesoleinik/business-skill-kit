@@ -1,0 +1,22 @@
+{
+  "skill": "cross-process/lead-to-order",
+  "description": "Promote a qualified lead into a new opportunity, dry-run-first and idempotent.",
+  "with": {
+    "module": "skills/cross-process/lead-to-order/skill.py",
+    "args": {"lead": "L003", "closedate": "2026-12-31", "force": true},
+    "datasets": {"opp_plan": "plans.opportunity"}
+  },
+  "without": {
+    "text": "Lead L003 exists.",
+    "datasets": {"opp_plan": {"source": "empty_plan"}}
+  },
+  "cases": [
+    {
+      "id": "l2o-L003",
+      "query": "Convert lead L003 into a pipeline opportunity.",
+      "assertions": [
+        {"level": "critical", "kind": "plan_creates", "dataset": "opp_plan", "match": {"id": "O-L003"}}
+      ]
+    }
+  ]
+}

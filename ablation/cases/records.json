@@ -1,0 +1,24 @@
+{
+  "skill": "platform/records",
+  "description": "Read, query, and search business records with grounded, filtered results.",
+  "with": {
+    "module": "skills/platform/records/skill.py",
+    "args": {"table": "account", "where": ["industry=Retail"], "select": "id,name,industry", "search": null, "order_by": null, "desc": false, "top": 50},
+    "datasets": {"rows": "rows"}
+  },
+  "without": {
+    "text": "Here are the accounts.",
+    "datasets": {"rows": {"source": "table", "table": "account"}}
+  },
+  "cases": [
+    {
+      "id": "rec-filter-retail",
+      "query": "List only the Retail accounts.",
+      "assertions": [
+        {"level": "critical", "kind": "contains", "dataset": "rows", "idfield": "id", "id": "A001"},
+        {"level": "critical", "kind": "not_contains", "dataset": "rows", "idfield": "id", "id": "A002"},
+        {"level": "expected", "kind": "contains", "dataset": "rows", "idfield": "id", "id": "A006"}
+      ]
+    }
+  ]
+}

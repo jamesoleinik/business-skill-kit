@@ -1,0 +1,22 @@
+{
+  "skill": "sales/quote-flow",
+  "description": "Advance a won opportunity to a won quote and a staged CRM sales order, dry-run-first.",
+  "with": {
+    "module": "skills/sales/quote-flow/skill.py",
+    "args": {"opp": "O008"},
+    "datasets": {"quote_plan": "quote_plan", "order_plan": "order_plan"}
+  },
+  "without": {
+    "text": "Opportunity O008 is won.",
+    "datasets": {"quote_plan": {"source": "empty_plan"}, "order_plan": {"source": "empty_plan"}}
+  },
+  "cases": [
+    {
+      "id": "qf-advance-O008",
+      "query": "The Litware upsell is won; stage the quote and CRM order.",
+      "assertions": [
+        {"level": "critical", "kind": "plan_updates", "dataset": "quote_plan", "key": "Q008", "field": "status", "to": "won"}
+      ]
+    }
+  ]
+}

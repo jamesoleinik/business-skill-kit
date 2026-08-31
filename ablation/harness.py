@@ -55,6 +55,9 @@ def _load_skill(rel_path):
 
 
 def _dig(data, dotted):
+    # An empty/"." path means "the whole data object" (write skills return the plan as data).
+    if dotted in ("", "."):
+        return data
     cur = data
     for part in dotted.split("."):
         if isinstance(cur, dict):

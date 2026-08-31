@@ -1,0 +1,23 @@
+{
+  "skill": "marketing/campaign-report",
+  "description": "Roll up message performance and flag email below a click-rate floor.",
+  "with": {
+    "module": "skills/marketing/campaign-report/skill.py",
+    "args": {"min_click": 5.0},
+    "datasets": {"messages": "messages", "below_floor": "below_floor"}
+  },
+  "without": {
+    "text": "Here are the campaign messages.",
+    "datasets": {"messages": {"source": "empty"}, "below_floor": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "cr-rollup",
+      "query": "How did the campaign messages perform?",
+      "assertions": [
+        {"level": "critical", "kind": "ranked_first", "dataset": "messages", "by": "click_rate", "idfield": "id", "id": "M001"},
+        {"level": "expected", "kind": "contains", "dataset": "below_floor", "idfield": "id", "id": "M002"}
+      ]
+    }
+  ]
+}

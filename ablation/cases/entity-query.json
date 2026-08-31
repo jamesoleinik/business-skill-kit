@@ -1,0 +1,22 @@
+{
+  "skill": "finance/entity-query",
+  "description": "Read a data entity with an explainable filter that is always stated.",
+  "with": {
+    "module": "skills/finance/entity-query/skill.py",
+    "args": {"entity": "salesorder", "where": ["status=submitted"], "select": null, "order_by": null, "desc": false, "top": 50},
+    "datasets": {"rows": "rows"}
+  },
+  "without": {
+    "text": "Here is the salesorder table.",
+    "datasets": {"rows": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "eq-invoiced",
+      "query": "Which sales orders are submitted?",
+      "assertions": [
+        {"level": "critical", "kind": "contains", "dataset": "rows", "idfield": "id", "id": "S004"}
+      ]
+    }
+  ]
+}

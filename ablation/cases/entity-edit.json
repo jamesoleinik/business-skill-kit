@@ -1,0 +1,22 @@
+{
+  "skill": "finance/entity-edit",
+  "description": "Create or update a single record in any entity, dry-run-first and idempotent.",
+  "with": {
+    "module": "skills/finance/entity-edit/skill.py",
+    "args": {"entity": "salesorder", "key": "id", "id": "S005", "set": ["status=invoiced"]},
+    "datasets": {"plan": ""}
+  },
+  "without": {
+    "text": "Sales order S005 exists.",
+    "datasets": {"plan": {"source": "empty_plan"}}
+  },
+  "cases": [
+    {
+      "id": "ee-invoice-S005",
+      "query": "Mark sales order S005 as invoiced.",
+      "assertions": [
+        {"level": "critical", "kind": "plan_updates", "dataset": "plan", "key": "S005", "field": "status", "to": "invoiced"}
+      ]
+    }
+  ]
+}

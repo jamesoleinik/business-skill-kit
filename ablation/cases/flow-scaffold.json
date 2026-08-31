@@ -1,0 +1,23 @@
+{
+  "skill": "platform/flow-scaffold",
+  "description": "Scaffold a Power Automate flow definition to out/ for review.",
+  "with": {
+    "module": "skills/platform/flow-scaffold/skill.py",
+    "args": {"name": "nightly-sync", "trigger": "when_a_record_is_updated", "table": "opportunity", "steps": null},
+    "datasets": {"actions": "actions"}
+  },
+  "without": {
+    "text": "You want a nightly sync automation.",
+    "datasets": {"actions": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "fs-draft-actions",
+      "query": "Draft a flow that reacts to updated opportunities.",
+      "assertions": [
+        {"level": "critical", "kind": "count_min", "dataset": "actions", "n": 3},
+        {"level": "expected", "kind": "contains", "dataset": "actions", "idfield": "action", "id": "update_record"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "skill": "marketing/journey-check",
+  "description": "Pre-flight customer journeys and return a go/no-go list.",
+  "with": {
+    "module": "skills/marketing/journey-check/skill.py",
+    "args": {},
+    "datasets": {"no_go": "no_go"}
+  },
+  "without": {
+    "text": "Here are the journeys.",
+    "datasets": {"no_go": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "jc-flag-nogo",
+      "query": "Which journeys are not safe to launch?",
+      "assertions": [
+        {"level": "critical", "kind": "contains", "dataset": "no_go", "idfield": "id", "id": "J002"},
+        {"level": "expected", "kind": "not_contains", "dataset": "no_go", "idfield": "id", "id": "J001"}
+      ]
+    }
+  ]
+}

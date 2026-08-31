@@ -1,0 +1,22 @@
+{
+  "skill": "cross-process/master-data-sync",
+  "description": "Detect and plan fixes for CRM/ERP master-data drift (name, back-link, missing customer).",
+  "with": {
+    "module": "skills/cross-process/master-data-sync/skill.py",
+    "args": {},
+    "datasets": {"erp_plan": "erp_plan"}
+  },
+  "without": {
+    "text": "CRM accounts and ERP customers exist.",
+    "datasets": {"erp_plan": {"source": "empty_plan"}}
+  },
+  "cases": [
+    {
+      "id": "mds-name-drift",
+      "query": "Reconcile CRM accounts with ERP customers.",
+      "assertions": [
+        {"level": "critical", "kind": "plan_updates", "dataset": "erp_plan", "key": "C-1002", "field": "name", "to": "Contoso Ltd"}
+      ]
+    }
+  ]
+}

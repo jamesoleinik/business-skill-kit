@@ -1,0 +1,22 @@
+{
+  "skill": "business-central/bc-action",
+  "description": "Discover and dry-run a bounded Business Central item action (adjust-inventory / set-price).",
+  "with": {
+    "module": "skills/business-central/bc-action/skill.py",
+    "args": {"action": "adjust-inventory", "id": "B001", "by": "-5", "value": null},
+    "datasets": {"plan": ""}
+  },
+  "without": {
+    "text": "Item B001 has inventory 32.",
+    "datasets": {"plan": {"source": "empty_plan"}}
+  },
+  "cases": [
+    {
+      "id": "ba-adjust-B001",
+      "query": "Reduce Bicycle inventory by 5.",
+      "assertions": [
+        {"level": "critical", "kind": "plan_updates", "dataset": "plan", "key": "B001", "field": "inventory", "to": 27}
+      ]
+    }
+  ]
+}

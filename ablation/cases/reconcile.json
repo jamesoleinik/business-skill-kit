@@ -1,0 +1,23 @@
+{
+  "skill": "platform/reconcile",
+  "description": "Find duplicate or drifted records and propose fixes before a close.",
+  "with": {
+    "module": "skills/platform/reconcile/skill.py",
+    "args": {"table": "account"},
+    "datasets": {"findings": "findings"}
+  },
+  "without": {
+    "text": "Here are the accounts and ERP customers.",
+    "datasets": {"findings": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "rc-name-drift",
+      "query": "Is CRM and ERP master data drifted before the close?",
+      "assertions": [
+        {"level": "critical", "kind": "count_min", "dataset": "findings", "n": 1},
+        {"level": "expected", "kind": "contains", "dataset": "findings", "idfield": "account", "id": "A002"}
+      ]
+    }
+  ]
+}

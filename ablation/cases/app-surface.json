@@ -1,0 +1,23 @@
+{
+  "skill": "platform/app-surface",
+  "description": "Describe a Power Apps screen (gallery and edit form) over a table as a portable spec.",
+  "with": {
+    "module": "skills/platform/app-surface/skill.py",
+    "args": {"table": "account"},
+    "datasets": {"form_fields": "form.fields", "gallery_fields": "gallery.fields"}
+  },
+  "without": {
+    "text": "Here is the account table.",
+    "datasets": {"form_fields": {"source": "empty"}, "gallery_fields": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "as-screen-spec",
+      "query": "Outline a browse-and-edit screen over accounts.",
+      "assertions": [
+        {"level": "critical", "kind": "count_min", "dataset": "form_fields", "n": 3},
+        {"level": "expected", "kind": "count_min", "dataset": "gallery_fields", "n": 1}
+      ]
+    }
+  ]
+}

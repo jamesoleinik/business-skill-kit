@@ -1,0 +1,23 @@
+{
+  "skill": "platform/audit",
+  "description": "Report what changed in the working copy and flag where sensitive fields live.",
+  "with": {
+    "module": "skills/platform/audit/skill.py",
+    "args": {},
+    "datasets": {"sensitive": "sensitive"}
+  },
+  "without": {
+    "text": "Here are the raw tables.",
+    "datasets": {"sensitive": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "au-sensitive-scan",
+      "query": "Where do sensitive fields live across the store?",
+      "assertions": [
+        {"level": "critical", "kind": "count_min", "dataset": "sensitive", "n": 1},
+        {"level": "expected", "kind": "contains", "dataset": "sensitive", "idfield": "table", "id": "account"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "skill": "service/response-draft",
+  "description": "Draft a grounded customer reply for a case (preview, never sends).",
+  "with": {
+    "module": "skills/service/response-draft/skill.py",
+    "args": {"case": "K002"},
+    "datasets": {}
+  },
+  "without": {
+    "text": "Draft a reply to the customer.",
+    "datasets": {}
+  },
+  "cases": [
+    {
+      "id": "rd-draft-K002",
+      "query": "Draft a reply for the billing overcharge case.",
+      "assertions": [
+        {"level": "critical", "kind": "text_contains", "substr": "Regarding case K002"},
+        {"level": "expected", "kind": "text_contains", "substr": "billing"}
+      ]
+    }
+  ]
+}

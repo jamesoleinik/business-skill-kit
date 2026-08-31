@@ -1,0 +1,23 @@
+{
+  "skill": "marketing/consent-guard",
+  "description": "Split contacts into mailable (opted-in) and blocked before any send.",
+  "with": {
+    "module": "skills/marketing/consent-guard/skill.py",
+    "args": {"account": null},
+    "datasets": {"blocked": "blocked", "mailable": "mailable"}
+  },
+  "without": {
+    "text": "Here is the contact list to send to.",
+    "datasets": {"blocked": {"source": "empty"}, "mailable": {"source": "table", "table": "contact"}}
+  },
+  "cases": [
+    {
+      "id": "cg-block-no-consent",
+      "query": "Who can we email and who must we exclude?",
+      "assertions": [
+        {"level": "critical", "kind": "contains", "dataset": "blocked", "idfield": "id", "id": "T003"},
+        {"level": "expected", "kind": "not_contains", "dataset": "mailable", "idfield": "id", "id": "T003"}
+      ]
+    }
+  ]
+}

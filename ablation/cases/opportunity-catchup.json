@@ -1,0 +1,23 @@
+{
+  "skill": "sales/opportunity-catchup",
+  "description": "Summarize the open pipeline by stage and forecast, and flag stale deals.",
+  "with": {
+    "module": "skills/sales/opportunity-catchup/skill.py",
+    "args": {"owner": null, "stale_days": 30},
+    "datasets": {"stale": "stale", "by_stage": "by_stage"}
+  },
+  "without": {
+    "text": "Here is the list of opportunities.",
+    "datasets": {"stale": {"source": "empty"}, "by_stage": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "oc-flag-stale",
+      "query": "Which open deals have gone quiet?",
+      "assertions": [
+        {"level": "critical", "kind": "ranked_first", "dataset": "stale", "by": "days_since_activity", "idfield": "id", "id": "O003"},
+        {"level": "expected", "kind": "contains", "dataset": "stale", "idfield": "id", "id": "O006"}
+      ]
+    }
+  ]
+}

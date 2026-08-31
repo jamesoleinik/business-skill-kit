@@ -1,0 +1,24 @@
+{
+  "skill": "sales/deal-risk",
+  "description": "Rank open opportunities by risk with an explained score.",
+  "with": {
+    "module": "skills/sales/deal-risk/skill.py",
+    "args": {"threshold": 40, "today": "2026-09-01"},
+    "datasets": {"ranked": "ranked", "at_risk": "at_risk"}
+  },
+  "without": {
+    "text": "Here is the open pipeline.",
+    "datasets": {"ranked": {"source": "table", "table": "opportunity"}, "at_risk": {"source": "empty"}}
+  },
+  "cases": [
+    {
+      "id": "dr-rank-risk",
+      "query": "Which open deals are most at risk?",
+      "assertions": [
+        {"level": "critical", "kind": "ranked_first", "dataset": "ranked", "by": "risk", "idfield": "id", "id": "O003"},
+        {"level": "expected", "kind": "contains", "dataset": "at_risk", "idfield": "id", "id": "O002"},
+        {"level": "expected", "kind": "not_contains", "dataset": "at_risk", "idfield": "id", "id": "O001"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "skill": "service/case-summary",
+  "description": "Ground a single case with its account/contact and suggest a category-aware next action.",
+  "with": {
+    "module": "skills/service/case-summary/skill.py",
+    "args": {"case": "K002"},
+    "datasets": {}
+  },
+  "without": {
+    "text": "Here is the raw case record for K002.",
+    "datasets": {}
+  },
+  "cases": [
+    {
+      "id": "cs-summary-K002",
+      "query": "Catch me up on the billing overcharge case.",
+      "assertions": [
+        {"level": "critical", "kind": "text_contains", "substr": "suggested next action"},
+        {"level": "expected", "kind": "text_contains", "substr": "invoice"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "skill": "finance/doc-attach",
+  "description": "Record a document attachment manifest against a business record (no field mutation).",
+  "with": {
+    "module": "skills/finance/doc-attach/skill.py",
+    "args": {"entity": "salesorder", "id": "S004", "name": "invoice-S004.pdf", "note": null},
+    "datasets": {}
+  },
+  "without": {
+    "text": "Attach the document to the record.",
+    "datasets": {}
+  },
+  "cases": [
+    {
+      "id": "da-attach-S004",
+      "query": "Attach the signed invoice PDF to sales order S004.",
+      "assertions": [
+        {"level": "critical", "kind": "text_contains", "substr": "doc-attach"},
+        {"level": "expected", "kind": "text_contains", "substr": "salesorder:S004"}
+      ]
+    }
+  ]
+}

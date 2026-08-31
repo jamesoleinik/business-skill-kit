@@ -1,0 +1,23 @@
+{
+  "skill": "platform/bulk-edit",
+  "description": "Propose and apply a reviewed set of field changes across a filtered set, dry-run-first.",
+  "with": {
+    "module": "skills/platform/bulk-edit/skill.py",
+    "args": {"table": "lead", "where": ["status=new"], "set": ["status=qualified"], "key": "id"},
+    "datasets": {"plan": ""}
+  },
+  "without": {
+    "text": "The leads are all new.",
+    "datasets": {"plan": {"source": "empty_plan"}}
+  },
+  "cases": [
+    {
+      "id": "be-set-status-qualified",
+      "query": "Set every new lead to qualified.",
+      "assertions": [
+        {"level": "critical", "kind": "plan_updates", "dataset": "plan", "key": "L001", "field": "status", "to": "qualified"},
+        {"level": "expected", "kind": "plan_updates", "dataset": "plan", "key": "L003", "field": "status", "to": "qualified"}
+      ]
+    }
+  ]
+}

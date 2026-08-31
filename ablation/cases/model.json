@@ -1,0 +1,23 @@
+{
+  "skill": "platform/model",
+  "description": "Inspect a table's shape and stage a schema-style change, dry-run-first.",
+  "with": {
+    "module": "skills/platform/model/skill.py",
+    "args": {"add_column": "account:region=unknown", "create_table": null},
+    "datasets": {"plan": ""}
+  },
+  "without": {
+    "text": "The account table has no region column.",
+    "datasets": {"plan": {"source": "empty_plan"}}
+  },
+  "cases": [
+    {
+      "id": "md-add-region",
+      "query": "Add a region column defaulting to unknown on every account.",
+      "assertions": [
+        {"level": "critical", "kind": "plan_updates", "dataset": "plan", "key": "A001", "field": "region", "to": "unknown"},
+        {"level": "expected", "kind": "plan_updates", "dataset": "plan", "key": "A008", "field": "region", "to": "unknown"}
+      ]
+    }
+  ]
+}
