@@ -60,6 +60,34 @@ MANIFEST = [
      "name": SEED_TAG + " Northwind expansion",
      "fields": {"estimatedvalue": 180000, "closeprobability": 60},
      "parent": {"field": "parentaccountid", "table": "account", "key": "acc-northwind"}},
+
+    # Consent contacts for the marketing consent-guard skill (contact_bskit_consent BIT).
+    {"key": "con-optin", "table": "contact", "namefield": "lastname",
+     "name": SEED_TAG + " Optin",
+     "fields": {"firstname": "Ada", "emailaddress1": "ada.optin@northwind.example",
+                "contact_bskit_consent": True}},
+    {"key": "con-noconsent", "table": "contact", "namefield": "lastname",
+     "name": SEED_TAG + " Noconsent",
+     "fields": {"firstname": "Ben", "emailaddress1": "ben.noconsent@northwind.example",
+                "contact_bskit_consent": False}},
+
+    # Cases for the service skills (incident_bskit_category, incident_bskit_sla_status;
+    # prioritycode High=1/Normal=2/Low=3; created Active). One breached-high to rank first.
+    {"key": "inc-breach", "table": "incident", "namefield": "title",
+     "name": SEED_TAG + " Breached billing overcharge",
+     "fields": {"description": "Invoice shows a duplicate line item.", "prioritycode": 1,
+                "incident_bskit_category": "billing", "incident_bskit_sla_status": "breached"},
+     "parent": {"field": "customerid", "table": "account", "key": "acc-northwind"}},
+    {"key": "inc-normal", "table": "incident", "namefield": "title",
+     "name": SEED_TAG + " Login fails after update",
+     "fields": {"description": "Customer cannot sign in following the latest update.", "prioritycode": 2,
+                "incident_bskit_category": "technical", "incident_bskit_sla_status": "ok"},
+     "parent": {"field": "customerid", "table": "account", "key": "acc-northwind"}},
+    {"key": "inc-low", "table": "incident", "namefield": "title",
+     "name": SEED_TAG + " How do I export a report",
+     "fields": {"description": "Where is the export button in the new UI?", "prioritycode": 3,
+                "incident_bskit_category": "how-to", "incident_bskit_sla_status": "ok"},
+     "parent": {"field": "customerid", "table": "account", "key": "acc-northwind"}},
 ]
 
 
@@ -124,8 +152,9 @@ def cmd_seed(client):
 
 
 def cmd_status(client):
-    for table in ("account", "contact", "lead", "opportunity"):
-        namefield = "lastname" if table == "contact" else ("subject" if table == "lead" else "name")
+    for table in ("account", "contact", "lead", "opportunity", "incident"):
+        namefield = "lastname" if table == "contact" else (
+            "subject" if table == "lead" else ("title" if table == "incident" else "name"))
         q = "SELECT %s, %sid FROM %s WHERE %s LIKE '%s%%'" % (
             namefield, table, table, namefield, SEED_TAG)
         res = client.tools_call("read_query", {"querytext": q})

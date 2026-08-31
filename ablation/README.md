@@ -86,13 +86,20 @@ identical, so the judge, stats, and report do not change; only the data source d
   tool, normalizes them into the store snapshot the harness expects, and runs the skill
   dry-run. Ground truth comes from the seed roles, not the skill's own output, so the
   assertions are an independent acceptance test.
+- `live_suite.py` generalizes that driver over several skills at once: each skill declares
+  which live tables to read, how to map their columns onto the fixture field names, and a
+  role-based assertion set. Run all with `python ablation/live_suite.py --url ... --token-file ...`
+  or a subset with `--only consent-guard,case-triage`.
 - `live_q2c_ablation.py` plus `live-agent/q2c_commit.py` exercise the cross-process
   CRM-order-to-ERP-invoice chain, including a real, idempotent, approval-gated write into
   live ERP.
 
-Proven live to date (verdict HELPS against a real environment): `sales/lead-qualify` and
-`cross-process/quote-to-cash`. These span the two distinct live planes: a CRM read/scoring
-skill and a CRM-to-ERP write chain.
+Proven live to date (verdict HELPS against a real environment): `sales/lead-qualify`,
+`cross-process/quote-to-cash`, and — after extending the live schema with the teaching
+columns (`contact.consent`, `incident.category`, `incident.sla_status`) — `marketing/consent-guard`,
+`service/case-triage`, `service/case-summary`, and `service/response-draft`. These span the
+distinct live planes: CRM read/scoring, single-record grounding/drafting, a compliance gate,
+and a CRM-to-ERP write chain.
 
 ### Live feasibility boundary (honest gap)
 
@@ -100,10 +107,13 @@ Not every skill can be faithfully live-run, and the kit does not pretend otherwi
 
 - **Live-capable** — skills over standard CRM tables that exist and are seeded in the target
   org (leads, accounts, contacts, opportunities, quotes, sales orders, cases).
-- **Fixture-only, custom-field** — skills that score on fields the fixture adds for teaching
-  (`days_since_activity`, `competitor`, `sla_status`, `category`, `consent`). Those columns
-  are not present on standard live tables, so a faithful live run needs schema extension
-  first. Fixture ablation fully covers them.
+- **Fixture-only, custom-field** — skills that score on fields the fixture adds for teaching.
+  The consent/service columns (`contact.consent`, `incident.category`, `incident.sla_status`)
+  have been added to the live schema, so `consent-guard`, `case-triage`, `case-summary`, and
+  `response-draft` are now live-proven. The opportunity columns (`days_since_activity`,
+  `competitor`) remain fixture-only: `opportunity` is a managed table whose publisher-prefix
+  rule blocks MCP-added columns, so `deal-risk` / `opportunity-catchup` stay fixture-only
+  until those columns are added via a publisher-prefixed solution.
 - **Fixture-only, table-not-deployed** — marketing (segment / journey / email message),
   finance ERP entities, and Business Central items are not surfaced as tables in every
   environment; where they are absent the skill is fixture-only by construction.
