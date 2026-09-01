@@ -1,4 +1,4 @@
-# live-agent — test the skills against real Dataverse orgs
+# live-agent: test the skills against real Dataverse orgs
 
 This harness uses the **GitHub Copilot SDK** (`@github/copilot-sdk`) to drive the real
 **Microsoft Dataverse MCP server** against one or more Dataverse orgs, running a per-skill
@@ -35,7 +35,7 @@ Feature Management, and the client app allow-listed at *System administration > 
 Allowed MCP clients* (separate from the Dataverse allow-list). Docs:
 `learn.microsoft.com/dynamics365/fin-ops-core/dev-itpro/copilot/mcp/mcp-vscode`.
 
-The stdlib helpers `signin.py` and `mcp_probe.py` work against **either** plane — pass the
+The stdlib helpers `signin.py` and `mcp_probe.py` work against **either** plane: pass the
 respective `--url` and `--scope`; nothing is hardcoded to an environment.
 
 ## How auth works (important)
@@ -107,9 +107,9 @@ matrix and are saved (gitignored) under `reports/`.
 
 Each scenario asks the agent to finish with a `RESULT:` line, which the harness parses:
 
-- **PASS** — the skill's live operation succeeded on that org.
-- **FAIL** — the operation was attempted but failed (error shown).
-- **NA** — not applicable on that org: a required table/entity isn't present, or the skill
+- **PASS**: the skill's live operation succeeded on that org.
+- **FAIL**: the operation was attempted but failed (error shown).
+- **NA**: not applicable on that org: a required table/entity isn't present, or the skill
   is local-only (scaffold) or targets non-Dataverse systems (ERP / Business Central /
   Customer Insights - Journeys), which the portable fixture models but a standard Dataverse
   org does not expose.

@@ -99,8 +99,8 @@ identical, so the judge, stats, and report do not change; only the data source d
   `--prefix` argument names the publisher prefix for the custom marketing / Business-Central
   tables so nothing environment-specific is committed.
 - `live-agent/webapi.py` posts the managed Dataverse messages MCP CRUD cannot
-  (`WinOpportunity`, `CloseIncident`). These run over the org's Web API — the same host the
-  MCP endpoint lives on — with a token minted for the Web API scope. `live-agent/seed.py
+  (`WinOpportunity`, `CloseIncident`). These run over the org's Web API (the same host the
+  MCP endpoint lives on) with a token minted for the Web API scope. `live-agent/seed.py
   --activate` uses it to win / resolve the dedicated closed-state records idempotently, which
   is what unblocks the three closed-state skills below.
 - `live_q2c_ablation.py` plus `live-agent/q2c_commit.py` exercise the cross-process
@@ -108,8 +108,8 @@ identical, so the judge, stats, and report do not change; only the data source d
   live ERP.
 
 Proven live to date (verdict HELPS against a real environment): **all 30 skills.** The
-generalized `live_suite.py` proves 29 in a single run — every sales, service, platform,
-finance, cross-process (CRM-side), marketing, and Business-Central skill — and
+generalized `live_suite.py` proves 29 in a single run (every sales, service, platform,
+finance, cross-process (CRM-side), marketing, and Business-Central skill), and
 `cross-process/quote-to-cash` is proven live end-to-end (including the ERP write) by the
 dedicated `live_q2c_ablation.py` driver. This spans all the distinct live planes: CRM
 read/scoring, single-record grounding/drafting, compliance gating, plan/migration drafting,
@@ -122,7 +122,7 @@ Business-Central tables are created via MCP `create_table` and seeded.
 
 ### Closed-state skills (won / resolved records)
 
-Three skills require a record **state transition** — a won opportunity or a resolved case —
+Three skills require a record **state transition** (a won opportunity or a resolved case)
 that MCP CRUD cannot set: writing `statecode` directly is rejected in favour of a managed
 message (`WinOpportunity` / `CloseIncidentRequest`). Those messages are ordinary Web API
 actions on the same org host, so `live-agent/webapi.py` posts them directly and
@@ -133,9 +133,9 @@ actions on the same org host, so `live-agent/webapi.py` posts them directly and
   **resolved** case (`CloseIncident`, status 5). service-return-to-erp additionally reads the
   account's ERP link, mapped from the standard `accountnumber` field.
 
-All three are proven both by fixture ablation and live via `live_suite.py`. Everything —
-standard CRM tables, the custom teaching columns, the marketing / BC tables, and the
-won/resolved state transitions — is proven live.
+All three are proven both by fixture ablation and live via `live_suite.py`. Everything
+(standard CRM tables, the custom teaching columns, the marketing / BC tables, and the
+won/resolved state transitions) is proven live.
 
 ## Safety and scope
 

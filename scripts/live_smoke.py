@@ -28,7 +28,7 @@ READS = [
 
 def main():
     ap = argparse.ArgumentParser(description="Read-only live smoke test against a Dataverse org.")
-    ap.add_argument("--url", default=os.environ.get("LIVE_DATAVERSE_URL"), help="org URL, e.g. https://org.crm.dynamics.com")
+    ap.add_argument("--url", default=os.environ.get("LIVE_DATAVERSE_URL"), help="org URL, e.g. https://<org>.crm.dynamics.com")
     ap.add_argument("--top", type=int, default=3)
     args = ap.parse_args()
     if not args.url:

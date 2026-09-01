@@ -6,8 +6,8 @@ the read path and auth breadth across environments/servers. Auth tokens come fro
 CLI at runtime; nothing is stored or committed.
 
 Usage:
-    python scripts/live_matrix.py --url https://a.crm.dynamics.com --url https://b.crm.dynamics.com
-    python scripts/live_matrix.py --url LABEL=https://a.crm.dynamics.com ...
+    python scripts/live_matrix.py --url https://<org-a>.crm.dynamics.com --url https://<org-b>.crm.dynamics.com
+    python scripts/live_matrix.py --url LABEL=https://<org-a>.crm.dynamics.com ...
 """
 import argparse
 import os
