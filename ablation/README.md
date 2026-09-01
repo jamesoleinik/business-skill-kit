@@ -92,37 +92,50 @@ identical, so the judge, stats, and report do not change; only the data source d
   --prefix <publisher-prefix>` or a subset with `--only consent-guard,case-triage`. The
   `--prefix` argument names the publisher prefix for the custom marketing / Business-Central
   tables so nothing environment-specific is committed.
+- `live_suite.py` generalizes that driver over the whole kit at once: each skill declares
+  which live tables to read, how to map their columns onto the fixture field names, and a
+  role-based assertion set. Run all with `python ablation/live_suite.py --url ... --token-file ...
+  --prefix <publisher-prefix>` or a subset with `--only consent-guard,case-triage`. The
+  `--prefix` argument names the publisher prefix for the custom marketing / Business-Central
+  tables so nothing environment-specific is committed.
+- `live-agent/webapi.py` posts the managed Dataverse messages MCP CRUD cannot
+  (`WinOpportunity`, `CloseIncident`). These run over the org's Web API — the same host the
+  MCP endpoint lives on — with a token minted for the Web API scope. `live-agent/seed.py
+  --activate` uses it to win / resolve the dedicated closed-state records idempotently, which
+  is what unblocks the three closed-state skills below.
 - `live_q2c_ablation.py` plus `live-agent/q2c_commit.py` exercise the cross-process
   CRM-order-to-ERP-invoice chain, including a real, idempotent, approval-gated write into
   live ERP.
 
-Proven live to date (verdict HELPS against a real environment): **27 of the 30 skills.** The
-generalized `live_suite.py` proves 26 in a single run — every sales, service, platform,
+Proven live to date (verdict HELPS against a real environment): **all 30 skills.** The
+generalized `live_suite.py` proves 29 in a single run — every sales, service, platform,
 finance, cross-process (CRM-side), marketing, and Business-Central skill — and
 `cross-process/quote-to-cash` is proven live end-to-end (including the ERP write) by the
 dedicated `live_q2c_ablation.py` driver. This spans all the distinct live planes: CRM
 read/scoring, single-record grounding/drafting, compliance gating, plan/migration drafting,
 custom-table analytics (segments, journeys, campaign messages, BC items), duplicate
-reconciliation, and a CRM-to-ERP write chain. The consent/service teaching columns
+reconciliation, closed-state transitions (won opportunity, resolved case), and a CRM-to-ERP
+write chain. The consent/service teaching columns
 (`contact.consent`, `incident.category`, `incident.sla_status`) were added to the live
 schema, the risk-varied opportunities score on standard fields, and the marketing /
 Business-Central tables are created via MCP `create_table` and seeded.
 
-### Live feasibility boundary (honest gap)
+### Closed-state skills (won / resolved records)
 
-Three skills remain fixture-only, and the kit does not pretend otherwise. The blocker is not
-the schema — it is that the required record **state transition** is only reachable through a
-managed Dataverse message the MCP surface does not expose:
+Three skills require a record **state transition** — a won opportunity or a resolved case —
+that MCP CRUD cannot set: writing `statecode` directly is rejected in favour of a managed
+message (`WinOpportunity` / `CloseIncidentRequest`). Those messages are ordinary Web API
+actions on the same org host, so `live-agent/webapi.py` posts them directly and
+`live-agent/seed.py --activate` transitions dedicated seeded records idempotently:
 
-- `sales/quote-flow` needs a **won** opportunity. Setting `statecode` directly is rejected
-  ("use the *won* message instead" / `WinOpportunity`), which MCP CRUD cannot invoke.
-- `service/knowledge-draft` and `cross-process/service-return-to-erp` need a **resolved**
-  case. Setting `incident.statecode` directly is rejected ("use the `CloseIncidentRequest`
-  message instead"), again not an MCP-exposed message.
+- `sales/quote-flow` runs against a **won** opportunity (`WinOpportunity`, status 3).
+- `service/knowledge-draft` and `cross-process/service-return-to-erp` run against a
+  **resolved** case (`CloseIncident`, status 5). service-return-to-erp additionally reads the
+  account's ERP link, mapped from the standard `accountnumber` field.
 
-All three are fully proven by fixture ablation; only their live won/resolved state is
-unreachable over MCP today. Everything else — standard CRM tables plus the custom teaching
-columns and marketing / BC tables — is proven live.
+All three are proven both by fixture ablation and live via `live_suite.py`. Everything —
+standard CRM tables, the custom teaching columns, the marketing / BC tables, and the
+won/resolved state transitions — is proven live.
 
 ## Safety and scope
 

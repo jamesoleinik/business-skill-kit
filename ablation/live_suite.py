@@ -111,6 +111,7 @@ def _map_account(r):
         "id": r["accountid"],
         "name": r.get("name"),
         "revenue": r.get("revenue"),
+        "erp_customer_id": r.get("accountnumber"),
         "industry": None,
         "city": r.get("address1_city"),
         "owner": None,
@@ -388,6 +389,39 @@ def _assert_reconcile(by, ctx):
     return [{"level": "critical", "kind": "count_min", "dataset": "findings", "n": 1}]
 
 
+# ---- closed-state skills (records won/resolved via the Web API activate step) -----------
+
+def _args_quote_flow(by, ctx):
+    return {"opp": _by_needle(by["opportunity"], "name", "Won")}
+
+
+def _assert_quote_flow(by, ctx):
+    return [{"level": "critical", "kind": "plan_creates", "dataset": "order_plan",
+             "match": {"status": "pending"}}]
+
+
+def _args_knowledge_draft(by, ctx):
+    return {"case": _by_needle(by["case"], "title", "Resolved sign-in")}
+
+
+def _assert_knowledge_draft(by, ctx):
+    return [{"level": "critical", "kind": "text_contains", "substr": "Status: draft"}]
+
+
+def _args_return_to_erp(by, ctx):
+    return {"case": _by_needle(by["case"], "title", "Return faulty"),
+            "amount": 100.0, "duedate": "2026-09-30"}
+
+
+def _assert_return_to_erp(by, ctx):
+    return [
+        {"level": "critical", "kind": "plan_creates", "dataset": "return_plan",
+         "match": {"status": "return"}},
+        {"level": "critical", "kind": "plan_creates", "dataset": "credit_plan",
+         "match": {"status": "credit"}},
+    ]
+
+
 # ---- shared fetch specs ----------------------------------------------------------------
 
 _CONTACT_FETCH = {
@@ -403,7 +437,7 @@ _INCIDENT_FETCH = {
 }
 _ACCOUNT_FETCH = {
     "table": "account", "namefield": "name", "target": "account",
-    "select": ["accountid", "name", "revenue", "address1_city"],
+    "select": ["accountid", "name", "revenue", "accountnumber", "address1_city"],
     "map": _map_account,
 }
 _OPP_FETCH = {
@@ -692,6 +726,34 @@ SPECS = {
         "without": {"text": "The records look consistent.",
                     "datasets": {"findings": {"source": "empty"}}},
         "assertions": _assert_reconcile,
+    },
+    # ---- closed-state skills (opp won / case resolved via the activate step) ----
+    "quote-flow": {
+        "skill": "skills/sales/quote-flow/skill.py",
+        "args": {}, "args_builder": _args_quote_flow,
+        "fetch": [_OPP_FETCH],
+        "with_datasets": {"order_plan": "order_plan"},
+        "without": {"text": "This won deal could be turned into a quote and order.",
+                    "datasets": {"order_plan": _EMPTY_PLAN}},
+        "assertions": _assert_quote_flow,
+    },
+    "knowledge-draft": {
+        "skill": "skills/service/knowledge-draft/skill.py",
+        "args": {}, "args_builder": _args_knowledge_draft,
+        "fetch": [_INCIDENT_FETCH],
+        "with_datasets": {},
+        "without": {"text": "This resolved case might make a useful article someday.",
+                    "datasets": {}},
+        "assertions": _assert_knowledge_draft,
+    },
+    "service-return-to-erp": {
+        "skill": "skills/cross-process/service-return-to-erp/skill.py",
+        "args": {}, "args_builder": _args_return_to_erp,
+        "fetch": [_with(_INCIDENT_FETCH, stamp={"accountid": "account_id"}), _ACCOUNT_FETCH],
+        "with_datasets": {"return_plan": "return_plan", "credit_plan": "credit_plan"},
+        "without": {"text": "A resolved return probably needs an ERP credit.",
+                    "datasets": {"return_plan": _EMPTY_PLAN, "credit_plan": _EMPTY_PLAN}},
+        "assertions": _assert_return_to_erp,
     },
 }
 
