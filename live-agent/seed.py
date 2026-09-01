@@ -26,15 +26,38 @@ _spec.loader.exec_module(mcp_probe)
 
 SEED_TAG = "zzz-bskit-seed"
 
+# Publisher prefix for the custom tables (set from --prefix at run time). Custom MANIFEST
+# entries carry base names; the prefix is stamped on at run time so nothing in this file is
+# environment-specific.
+PREFIX = None
+
+
+def _locators(entry):
+    """Return (table_logical, namefield_logical, idfield) honouring the custom prefix."""
+    if entry.get("custom"):
+        if not PREFIX:
+            raise SystemExit("entry %r needs a custom table; pass --prefix <publisher-prefix>"
+                             % entry["key"])
+        table = "%s_%s" % (PREFIX, entry["table"])
+        namefield = "%s_%s" % (PREFIX, entry["namefield"])
+        return table, namefield, table + "id"
+    return entry["table"], entry["namefield"], entry["table"] + "id"
+
 # Each entry: table, a name field carrying the tag, and additional literal fields.
 # Order matters: parents (account) before children (contact, opportunity) so lookups resolve.
 MANIFEST = [
     {"key": "acc-northwind", "table": "account", "namefield": "name",
      "name": SEED_TAG + " Northwind Traders",
-     "fields": {"telephone1": "425-555-0101", "websiteurl": "https://northwind.example"}},
+     "fields": {"telephone1": "425-555-0101", "websiteurl": "https://northwind.example",
+                "revenue": 5000000}},
     {"key": "acc-fabrikam", "table": "account", "namefield": "name",
      "name": SEED_TAG + " Fabrikam Manufacturing",
-     "fields": {"telephone1": "425-555-0102"}},
+     "fields": {"telephone1": "425-555-0102", "revenue": 750000}},
+
+    # Duplicate-named accounts for the reconcile skill. count=2 makes the seeder ensure two
+    # rows with this exact name exist (idempotently), which reconcile flags as a duplicate.
+    {"key": "acc-dupe", "table": "account", "namefield": "name",
+     "name": SEED_TAG + " Dupe Co", "count": 2, "fields": {"revenue": 100000}},
 
     {"key": "con-northwind", "table": "contact", "namefield": "lastname",
      "name": SEED_TAG + " Reed",
@@ -59,6 +82,19 @@ MANIFEST = [
     {"key": "opp-northwind", "table": "opportunity", "namefield": "name",
      "name": SEED_TAG + " Northwind expansion",
      "fields": {"estimatedvalue": 180000, "closeprobability": 60},
+     "parent": {"field": "parentaccountid", "table": "account", "key": "acc-northwind"}},
+
+    # Risk-varied opportunities for deal-risk / opportunity-catchup (standard fields only:
+    # low probability + a past close date make the risky one score highest).
+    {"key": "opp-risky", "table": "opportunity", "namefield": "name",
+     "name": SEED_TAG + " Risky stalled renewal",
+     "fields": {"estimatedvalue": 90000, "closeprobability": 10,
+                "estimatedclosedate": "2020-01-01"},
+     "parent": {"field": "parentaccountid", "table": "account", "key": "acc-northwind"}},
+    {"key": "opp-healthy", "table": "opportunity", "namefield": "name",
+     "name": SEED_TAG + " Healthy new logo",
+     "fields": {"estimatedvalue": 250000, "closeprobability": 85,
+                "estimatedclosedate": "2027-12-31"},
      "parent": {"field": "parentaccountid", "table": "account", "key": "acc-northwind"}},
 
     # Consent contacts for the marketing consent-guard skill (contact_bskit_consent BIT).
@@ -88,6 +124,26 @@ MANIFEST = [
      "fields": {"description": "Where is the export button in the new UI?", "prioritycode": 3,
                 "incident_bskit_category": "how-to", "incident_bskit_sla_status": "ok"},
      "parent": {"field": "customerid", "table": "account", "key": "acc-northwind"}},
+
+    # Custom-table records for marketing + business-central skills. These live in custom
+    # Dataverse tables that carry a publisher prefix; pass it with --prefix and the seeder
+    # stamps it onto the table and every column at run time (nothing prefix-specific here).
+    {"key": "seg-enterprise", "table": "bskitsegment", "custom": True, "namefield": "name",
+     "name": SEED_TAG + " Enterprise accounts",
+     "fields": {"definition": "revenue >= 1000000", "status": "draft", "membercount": 1}},
+    {"key": "jny-live-errors", "table": "bskitjourney", "custom": True, "namefield": "name",
+     "name": SEED_TAG + " Welcome journey",
+     "fields": {"status": "live", "segmentid": "unlinked", "errors": 2}},
+    {"key": "msg-lowclick", "table": "bskitemailmsg", "custom": True, "namefield": "name",
+     "name": SEED_TAG + " Underperforming blast",
+     "fields": {"channel": "email", "sends": 1000, "opens": 200, "clicks": 10}},
+    {"key": "msg-good", "table": "bskitemailmsg", "custom": True, "namefield": "name",
+     "name": SEED_TAG + " Healthy newsletter",
+     "fields": {"channel": "email", "sends": 1000, "opens": 500, "clicks": 100}},
+    {"key": "item-widget", "table": "bskititem", "custom": True, "namefield": "name",
+     "name": SEED_TAG + " Widget A100",
+     "fields": {"number": "ITEM-A100", "description": "Standard widget", "price": 50,
+                "inventory": 5}},
 ]
 
 
@@ -98,8 +154,8 @@ def _text(res):
         return json.dumps(res)
 
 
-def _find_id(client, table, namefield, name):
-    idfield = table + "id"
+def _find_id(client, table, namefield, name, idfield=None):
+    idfield = idfield or (table + "id")
     q = "SELECT %s, %s FROM %s WHERE %s = '%s'" % (
         namefield, idfield, table, namefield, name.replace("'", "''"))
     res = client.tools_call("read_query", {"querytext": q})
@@ -114,6 +170,19 @@ def _find_id(client, table, namefield, name):
     return None
 
 
+def _count_ids(client, table, namefield, name, idfield):
+    q = "SELECT %s, %s FROM %s WHERE %s = '%s'" % (
+        namefield, idfield, table, namefield, name.replace("'", "''"))
+    res = client.tools_call("read_query", {"querytext": q})
+    if res.get("result", {}).get("isError"):
+        return []
+    try:
+        rows = json.loads(_text(res))
+    except (json.JSONDecodeError, TypeError):
+        return []
+    return [r.get(idfield) for r in rows]
+
+
 def _resolve(client, entry, created):
     item = dict(entry["fields"])
     item[entry["namefield"]] = entry["name"]
@@ -124,6 +193,8 @@ def _resolve(client, entry, created):
             pid = _find_id(client, parent["table"], "name", MANIFEST_BY_KEY[parent["key"]]["name"])
         if pid:
             item[parent["field"]] = {"relatedTable": parent["table"], "recordId": pid}
+    if entry.get("custom"):
+        item = {"%s_%s" % (PREFIX, k): v for k, v in item.items()}
     return item
 
 
@@ -133,21 +204,36 @@ MANIFEST_BY_KEY = {e["key"]: e for e in MANIFEST}
 def cmd_seed(client):
     created = {}
     for entry in MANIFEST:
-        existing = _find_id(client, entry["table"], entry["namefield"], entry["name"])
+        table, namefield, idfield = _locators(entry)
+        want = entry.get("count")
+        if want:
+            have = _count_ids(client, table, namefield, entry["name"], idfield)
+            created[entry["key"]] = have[0] if have else None
+            for _ in range(max(0, want - len(have))):
+                item = _resolve(client, entry, created)
+                res = client.tools_call("create_record", {"tablename": table, "item": item})
+                txt = _text(res)
+                rid = txt.split()[-1] if "ID" in txt else None
+                created[entry["key"]] = created[entry["key"]] or rid
+                print("create %-16s %s (dup) -> %s" % (table, entry["name"], rid or txt))
+            if want <= len(have):
+                print("skip  %-16s %s (%d already exist)" % (table, entry["name"], len(have)))
+            continue
+        existing = _find_id(client, table, namefield, entry["name"], idfield)
         if existing:
             created[entry["key"]] = existing
-            print("skip  %-14s %s (exists %s)" % (entry["table"], entry["name"], existing))
+            print("skip  %-16s %s (exists %s)" % (table, entry["name"], existing))
             continue
         item = _resolve(client, entry, created)
-        res = client.tools_call("create_record", {"tablename": entry["table"], "item": item})
+        res = client.tools_call("create_record", {"tablename": table, "item": item})
         txt = _text(res)
         if res.get("result", {}).get("isError"):
-            print("FAIL  %-14s %s -> %s" % (entry["table"], entry["name"], txt))
+            print("FAIL  %-16s %s -> %s" % (table, entry["name"], txt))
             continue
         rid = txt.split()[-1] if "ID" in txt else None
         if rid:
             created[entry["key"]] = rid
-        print("create %-14s %s -> %s" % (entry["table"], entry["name"], rid or txt))
+        print("create %-16s %s -> %s" % (table, entry["name"], rid or txt))
     print("seeded %d/%d records" % (len(created), len(MANIFEST)))
 
 
@@ -170,13 +256,14 @@ def cmd_status(client):
 def cmd_teardown(client):
     n = 0
     for entry in reversed(MANIFEST):
-        rid = _find_id(client, entry["table"], entry["namefield"], entry["name"])
+        table, namefield, idfield = _locators(entry)
+        rid = _find_id(client, table, namefield, entry["name"], idfield)
         if not rid:
             continue
         res = client.tools_call("delete_record", {
-            "tablename": entry["table"], "recordId": rid, "hasUserApproved": True})
+            "tablename": table, "recordId": rid, "hasUserApproved": True})
         ok = not res.get("result", {}).get("isError")
-        print("%s %-14s %s" % ("del " if ok else "FAIL", entry["table"], entry["name"]))
+        print("%s %-16s %s" % ("del " if ok else "FAIL", table, entry["name"]))
         n += 1 if ok else 0
     print("removed %d record(s)" % n)
 
@@ -185,12 +272,15 @@ def main():
     p = argparse.ArgumentParser(description="Idempotent tagged CRM seeder for live ablation.")
     p.add_argument("--url", required=True)
     p.add_argument("--token-file", required=True)
+    p.add_argument("--prefix", help="publisher prefix for the custom tables (e.g. crXXX)")
     g = p.add_mutually_exclusive_group(required=True)
     g.add_argument("--seed", action="store_true")
     g.add_argument("--status", action="store_true")
     g.add_argument("--teardown", action="store_true")
     args = p.parse_args()
 
+    global PREFIX
+    PREFIX = args.prefix
     client = mcp_probe.McpClient(args.url, mcp_probe._load_token(args.token_file))
     client.initialize()
     if args.seed:

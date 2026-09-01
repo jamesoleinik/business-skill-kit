@@ -86,40 +86,43 @@ identical, so the judge, stats, and report do not change; only the data source d
   tool, normalizes them into the store snapshot the harness expects, and runs the skill
   dry-run. Ground truth comes from the seed roles, not the skill's own output, so the
   assertions are an independent acceptance test.
-- `live_suite.py` generalizes that driver over several skills at once: each skill declares
+- `live_suite.py` generalizes that driver over the whole kit at once: each skill declares
   which live tables to read, how to map their columns onto the fixture field names, and a
-  role-based assertion set. Run all with `python ablation/live_suite.py --url ... --token-file ...`
-  or a subset with `--only consent-guard,case-triage`.
+  role-based assertion set. Run all with `python ablation/live_suite.py --url ... --token-file ...
+  --prefix <publisher-prefix>` or a subset with `--only consent-guard,case-triage`. The
+  `--prefix` argument names the publisher prefix for the custom marketing / Business-Central
+  tables so nothing environment-specific is committed.
 - `live_q2c_ablation.py` plus `live-agent/q2c_commit.py` exercise the cross-process
   CRM-order-to-ERP-invoice chain, including a real, idempotent, approval-gated write into
   live ERP.
 
-Proven live to date (verdict HELPS against a real environment): `sales/lead-qualify`,
-`cross-process/quote-to-cash`, and — after extending the live schema with the teaching
-columns (`contact.consent`, `incident.category`, `incident.sla_status`) — `marketing/consent-guard`,
-`service/case-triage`, `service/case-summary`, and `service/response-draft`. These span the
-distinct live planes: CRM read/scoring, single-record grounding/drafting, a compliance gate,
-and a CRM-to-ERP write chain.
+Proven live to date (verdict HELPS against a real environment): **27 of the 30 skills.** The
+generalized `live_suite.py` proves 26 in a single run — every sales, service, platform,
+finance, cross-process (CRM-side), marketing, and Business-Central skill — and
+`cross-process/quote-to-cash` is proven live end-to-end (including the ERP write) by the
+dedicated `live_q2c_ablation.py` driver. This spans all the distinct live planes: CRM
+read/scoring, single-record grounding/drafting, compliance gating, plan/migration drafting,
+custom-table analytics (segments, journeys, campaign messages, BC items), duplicate
+reconciliation, and a CRM-to-ERP write chain. The consent/service teaching columns
+(`contact.consent`, `incident.category`, `incident.sla_status`) were added to the live
+schema, the risk-varied opportunities score on standard fields, and the marketing /
+Business-Central tables are created via MCP `create_table` and seeded.
 
 ### Live feasibility boundary (honest gap)
 
-Not every skill can be faithfully live-run, and the kit does not pretend otherwise:
+Three skills remain fixture-only, and the kit does not pretend otherwise. The blocker is not
+the schema — it is that the required record **state transition** is only reachable through a
+managed Dataverse message the MCP surface does not expose:
 
-- **Live-capable** — skills over standard CRM tables that exist and are seeded in the target
-  org (leads, accounts, contacts, opportunities, quotes, sales orders, cases).
-- **Fixture-only, custom-field** — skills that score on fields the fixture adds for teaching.
-  The consent/service columns (`contact.consent`, `incident.category`, `incident.sla_status`)
-  have been added to the live schema, so `consent-guard`, `case-triage`, `case-summary`, and
-  `response-draft` are now live-proven. The opportunity columns (`days_since_activity`,
-  `competitor`) remain fixture-only: `opportunity` is a managed table whose publisher-prefix
-  rule blocks MCP-added columns, so `deal-risk` / `opportunity-catchup` stay fixture-only
-  until those columns are added via a publisher-prefixed solution.
-- **Fixture-only, table-not-deployed** — marketing (segment / journey / email message),
-  finance ERP entities, and Business Central items are not surfaced as tables in every
-  environment; where they are absent the skill is fixture-only by construction.
+- `sales/quote-flow` needs a **won** opportunity. Setting `statecode` directly is rejected
+  ("use the *won* message instead" / `WinOpportunity`), which MCP CRUD cannot invoke.
+- `service/knowledge-draft` and `cross-process/service-return-to-erp` need a **resolved**
+  case. Setting `incident.statecode` directly is rejected ("use the `CloseIncidentRequest`
+  message instead"), again not an MCP-exposed message.
 
-This boundary is a property of the target environment's schema, not of the skills: all 30
-are proven by fixture ablation, and the live-capable subset is additionally proven live.
+All three are fully proven by fixture ablation; only their live won/resolved state is
+unreachable over MCP today. Everything else — standard CRM tables plus the custom teaching
+columns and marketing / BC tables — is proven live.
 
 ## Safety and scope
 
