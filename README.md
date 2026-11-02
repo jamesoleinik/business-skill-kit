@@ -8,7 +8,7 @@ coding agent drive the first-party tools to do it, with the guardrails that make
 safe to run against real data.
 
 Written by [James Oleinik](https://github.com/jamesoleinik). Personal and
-open-source. Not official Microsoft documentation. Private and in active development.
+open-source. Not official Microsoft documentation. Public and in active development.
 
 ## The idea
 
@@ -126,11 +126,10 @@ These run through every skill in the kit, and are spelled out in
 
 ## Status
 
-In active development, private. All 30 skills across seven domains (platform, sales,
-service, marketing, finance, Business Central, and cross-process) are built and pass
-`validate.py` against the synthetic fixture. The concrete first-party tool binding for
-each skill is mapped in private build notes; it stays private until it passes the publish
-review gate.
+This repository is public and in active development. The synthetic fixture suite passes
+69 checks, including preflight readiness, usage coverage, dry-run behavior, idempotency,
+and fixture immutability (`python validate.py`). The fixture suite is the default
+evaluation path and does not require access to a live environment.
 
 ## License
 
